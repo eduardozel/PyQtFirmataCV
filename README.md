@@ -1,2 +1,2 @@
 # PyQtFirmataCV
-Pyton Firmata Arduino OpenCV
+Python Firmata Arduino OpenCV
