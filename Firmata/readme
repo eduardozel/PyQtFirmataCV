@@ -1,1 +1,3 @@
-
+correct PyFirmata for python 3.11
+https://coder-studio.ru/q-2504690/pyfirmata-vydayet-oshibku-posle-sozdaniya-ob-yekta-arduino#a_74572258
+https://github.com/tino/pyFirmata/commit/1f6b116b80172e70c7866d595120413078ae1222
