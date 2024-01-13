@@ -14,15 +14,14 @@ import pyfirmata
 import time
 import serial
 import serial.tools.list_ports
-from CAR import Car
+from CAR import Car, MotorPos, MotorMode
 
 #https://lora-grig.ru/how-to-fix-missing-image-and-button-in-pyqt6-application/
 
-portNo =''
 class Window(QWidget):
     def __init__(self):
         super().__init__()
-
+        self.motor = 0
         self.setFixedSize(QSize(200, 150))
         self.setWindowTitle("test wheels")
         self.setWindowIcon(QIcon('./imgWheels/wheel.png'))
@@ -54,21 +53,29 @@ class Window(QWidget):
         self.btn_backward.setIcon(QtGui.QIcon('./imgWheels/btnBackward.png'))
         self.btn_backward.setIconSize(QtCore.QSize(64, 32))
         self.btn_backward.setGeometry(130, 50, 64, 32)
+        self.btn_backward.setCheckable(True)
+        self.btn_backward.clicked.connect(self.btn_backward_was_toggled)
         self.btn_backward.setEnabled(portNo != '')
     @QtCore.pyqtSlot(bool)
     def btn_forward_was_toggled(self, checked):
         if checked:
-            print('+++++')
-            carMecanum.motorRun( 1, 1)
+            carMecanum.motorRun( self.motor, MotorMode.forward)
+            self.btn_backward.setEnabled(False)
             self.rowOverride = True
         elif not checked:
-            print('-----')
-            carMecanum.motorRun(1, 0)
+            carMecanum.motorRun( self.motor, MotorMode.stop)
+            self.btn_backward.setEnabled(True)
             self.rowOverride = False
 
-    def btn_forward_Clicked(self):
-        print("down")
-
+    def btn_backward_was_toggled(self, checked):
+        if checked:
+            carMecanum.motorRun( self.motor, MotorMode.backward)
+            self.btn_forward.setEnabled(False)
+            self.rowOverride = True
+        elif not checked:
+            carMecanum.motorRun( self.motor, MotorMode.stop)
+            self.btn_forward.setEnabled(True)
+            self.rowOverride = False
 
     def mousePressEvent(self, event):
         pos = event.pos()
@@ -78,13 +85,17 @@ class Window(QWidget):
             if ( y < 60 ):
                 if ( x < 60 ):
                     pixmap = QPixmap('./imgWheels/carL1.png')
+                    self.motor = MotorPos.LF
                 else:
                     pixmap = QPixmap('./imgWheels/carR1.png')
+                    self.motor = MotorPos.RF
             else:
                 if ( x < 60 ):
                     pixmap = QPixmap('./imgWheels/carL2.png')
+                    self.motor = MotorPos.LB
                 else:
                     pixmap = QPixmap('./imgWheels/carR2.png')
+                    self.motor = MotorPos.RB
             self.label.setPixmap(pixmap)
     #end mousePressEvent
 #end class window
@@ -106,12 +117,12 @@ for port in ports:
 #        portNo = port.device
 #        print('+'+portNo)
 # end for port
-board = pyfirmata.Arduino(portNo)
+#board = pyfirmata.Arduino(portNo)
 print("board install")
 if (portNo !=''):
     pass
     global carMecanum
-    carMecanum = Car(portNo, board)
+    carMecanum = Car(portNo)
 
 
 #for i in range(1, 10):
@@ -121,6 +132,8 @@ if (portNo !=''):
 #    time.sleep(1)
 #board.exit()
 
+
+motor = 0#MotorPos.LF
 window = Window()
 window.show()
 print('quit')
