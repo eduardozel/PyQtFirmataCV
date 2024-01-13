@@ -8,10 +8,12 @@ MotorMode = enum.Enum(
     value='MotorMode',
     names=('forward backward stop brake'),
 )
-#end MotorMode
 
-HIGH = True # Create a high state
-LOW = False # Create a low state
+CarMode = enum.Enum(
+    value='CarMode',
+    names=('forward backward left right clockwise counterclockwise stop brake'),
+)
+#end MotorMode
 
 #MotorPos = enum.Enum(
 #    value='MotorPos',
@@ -67,6 +69,47 @@ class Car:
         elif ( mode == MotorMode.brake ):
             self.board.digital[pin0].write(1)
             self.board.digital[pin1].write(1)
+
+    def CarRun(self, mode):
+        print("mode")
+        print(mode)
+        if ( mode == CarMode.stop ):
+            self.motorRun(0, MotorMode.stop)
+            self.motorRun(1, MotorMode.stop)
+            self.motorRun(2, MotorMode.stop)
+            self.motorRun(3, MotorMode.stop)
+        elif (mode == CarMode.forward):
+            print("forward")
+            self.motorRun(0, MotorMode.forward)
+            self.motorRun(1, MotorMode.forward)
+            self.motorRun(2, MotorMode.forward)
+            self.motorRun(3, MotorMode.forward)
+        elif ( mode == CarMode.backward ):
+            self.motorRun(0, MotorMode.backward)
+            self.motorRun(1, MotorMode.backward)
+            self.motorRun(2, MotorMode.backward)
+            self.motorRun(3, MotorMode.backward)
+        elif (mode == CarMode.left):
+            self.motorRun(0, MotorMode.backward) #FL
+            self.motorRun(1, MotorMode.forward)  #FR
+            self.motorRun(2, MotorMode.backward) #BR
+            self.motorRun(3, MotorMode.forward)  #BL
+        elif (mode == CarMode.right):
+            self.motorRun(0, MotorMode.forward)   #FL
+            self.motorRun(1, MotorMode.backward)  #FR
+            self.motorRun(2, MotorMode.forward)   #BR
+            self.motorRun(3, MotorMode.backward)  #BL
+        elif (mode == CarMode.clockwise):
+            self.motorRun(0, MotorMode.forward)   #FL
+            self.motorRun(1, MotorMode.backward)  #FR
+            self.motorRun(2, MotorMode.backward)  #BR
+            self.motorRun(3, MotorMode.forward)   #BL
+#counterclockwise
+        elif (mode == CarMode.counterclockwise):
+            self.motorRun(0, MotorMode.backward)  # FL
+            self.motorRun(1, MotorMode.forward)  # FR
+            self.motorRun(2, MotorMode.forward)  # BR
+            self.motorRun(3, MotorMode.backward)  # BL
 
 if __name__=="__main__":
     pass
