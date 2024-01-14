@@ -121,10 +121,32 @@ class CarControlUI(QMainWindow):
 # end class  CarControlUI
 
 if __name__=="__main__":
-    portNo = 'COM6'
-    global carMecanum
-    carMecanum = Car(portNo)
+    portNo = ''
+
+    ports = serial.tools.list_ports.comports()
+    for port in ports:
+#        print(port.device)
+#        print(f"description: {port.description}")
+#        print(f"manufacturer: {port.manufacturer}\n")
+#        print(f"hwid: {port.hwid}\n")
+        if port.hwid=='BTHENUM\\{00001101-0000-1000-8000-00805F9B34FB}_LOCALMFG&0002\\8&39341452&0&98DA600ACB1E_C00000000':
+            portNo = port.device
+            print('!' + portNo)
+    if (portNo != ''):
+        global carMecanum
+        carMecanum = Car(portNo)
+        print("board install")
+    else:
+        print("not found!!!")
+
     app = QApplication([])
     window = CarControlUI()
     window.show()
     sys.exit(app.exec())
+
+#print(f"hwid: {port.hwid}\n")
+#COM7
+#name: BTHENUM\{00001101-0000-1000-8000-00805F9B34FB}_LOCALMFG&0002\8&39341452&0&98DA600ACB1E_C00000000
+
+#COM8
+#name: BTHENUM\{00001101-0000-1000-8000-00805F9B34FB}_LOCALMFG&0000\8&39341452&0&000000000000_00000014

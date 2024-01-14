@@ -104,12 +104,13 @@ app = QApplication(sys.argv)
 
 #portNo = 'COM4'# Windows
 #port = '/dev/ttyACM3' # Linux
-
+portNo = ''
 ports = serial.tools.list_ports.comports()
 for port in ports:
-    #    print(port.device)
-    #    print(f"description: {port.description}")
-    #    print(f"manufacturer: {port.manufacturer}\n")
+        print(port.device)
+        print(f"description: {port.description}")
+        print(f"manufacturer: {port.manufacturer}\n")
+        print(f"hwid: {port.hwid}\n")
         if 'USB-SERIAL CH340' == port.description[:16]:
             portNo = port.device
             print('!' + portNo)
@@ -118,11 +119,12 @@ for port in ports:
 #        print('+'+portNo)
 # end for port
 #board = pyfirmata.Arduino(portNo)
-print("board install")
+
 if (portNo !=''):
     pass
     global carMecanum
     carMecanum = Car(portNo)
+    print("board install")
 
 
 #for i in range(1, 10):
@@ -136,5 +138,4 @@ if (portNo !=''):
 motor = 0#MotorPos.LF
 window = Window()
 window.show()
-print('quit')
 sys.exit(app.exec())
