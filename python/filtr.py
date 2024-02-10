@@ -7,6 +7,8 @@ if __name__ == '__main__':
     def nothing(*arg):
         pass
 
+cameraIP = '192.168.100.4'
+cap = cv2.VideoCapture("http://"+cameraIP+":8080/video")
 cv2.namedWindow( "result" ) # создаем главное окно
 cv2.namedWindow( "settings" ) # создаем окно настроек
 
@@ -22,9 +24,12 @@ cv2.createTrackbar('v2', 'settings', 255, 255, nothing)
 crange = [0,0,0, 0,0,0]
 
 while True:
-#    flag, img = cap.read()
+    flag, img = cap.read()
 #    img = cv2.imread( '/home/clover/Desktop/edFlag/flags/fl142 gm/'+ 'germany.png')
-    img = cv2.imread( '/home/clover/Desktop/edFlag/flags/'+'flags.png')
+#    img = cv2.imread( '/home/clover/Desktop/edFlag/flags/'+'flags.png')
+#    img = cap.read()
+
+#    img = cv2.imread('./imgTurtle/' + 'cartest.jpg')
     hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV )
  
     # считываем значения бегунков
@@ -48,5 +53,4 @@ while True:
     if ch == 27:
         break
 
-cap.release()
 cv2.destroyAllWindows()
