@@ -14,4 +14,4 @@ platform CV PyAi-k210
 https://mysku.club/blog/aliexpress/82725.html
 
 ROS
-dhttps://amperka.ru/blogs/projects/abot-robot-part-11
+https://amperka.ru/blogs/projects/abot-robot-part-11
