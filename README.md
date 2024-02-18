@@ -10,7 +10,7 @@ https://arduinofactory.com/pyfirmata/
 
 https://youtu.be/fNfm6DdmyLU
 
-platform CV
+platform CV PyAi-k210
 https://mysku.club/blog/aliexpress/82725.html
 
 ROS
