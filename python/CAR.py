@@ -1,7 +1,10 @@
 import enum
 import pyfirmata
 
+
 #https://habr.com/ru/articles/137415/
+#https://python.hotexamples.com/examples/pyfirmata/Arduino/get_pin/python-arduino-get_pin-method-examples.html
+#https://jethrojeff.com/
 
 
 MotorMode = enum.Enum(
@@ -35,8 +38,13 @@ class Motor:
 class Car:
     def __init__(self, portNo):
         self.__port = portNo
-        print('>>'+portNo)
+        print('!>>'+portNo)
+        PORT = ''#pyfirmata.Arduino.AUTODETECT
+        print("PORT>>"+PORT)
         self.board = pyfirmata.Arduino(portNo)
+        it = pyfirmata.util.Iterator(self.board)
+        it.start()
+        self.curMode = CarMode.stop
 
         self.motorpins = [[5, 6]
             , [9, 10]
@@ -54,6 +62,25 @@ class Car:
         print("del")
         self.board.exit()
 
+    def getBattery(self
+    ):
+        pot = self.board.get_pin('a:5:i')
+        motorBattery = pot.read()
+        while motorBattery is None:
+            motorBattery = pot.read()
+#        self.board.digital[2].mode = pyfirmata.INPUT
+
+        ir_pin =  self.board.get_pin('d:2:i')
+        ir_pin.enable_reporting()
+        # delay for a second
+#        time.sleep(1)
+#        ir = self.board.digital[3].read()
+        ir = ir_pin.read()
+        while ir is None:
+            ir = ir_pin.read()
+        print ("ir",ir)
+        return motorBattery
+    # end getBattery
     def motorRun(self, motor, mode):
         pin1 = self.motorpins[motor][0]
         pin0 = self.motorpins[motor][1]
@@ -70,10 +97,20 @@ class Car:
             self.board.digital[pin0].write(1)
             self.board.digital[pin1].write(1)
 
-    def CarRun(self, mode):
+    def CarRun(self, mode
+    ):
+        """
+        Move car
+        """
+        if (self.curMode == mode):
+            pass
+            return
+        else:
+            self.curMode = mode
         print("mode")
         print(mode)
         if ( mode == CarMode.stop ):
+            print("stop")
             self.motorRun(0, MotorMode.stop)
             self.motorRun(1, MotorMode.stop)
             self.motorRun(2, MotorMode.stop)
@@ -104,11 +141,10 @@ class Car:
             self.motorRun(1, MotorMode.backward)  #FR
             self.motorRun(2, MotorMode.backward)  #BR
             self.motorRun(3, MotorMode.forward)   #BL
-#counterclockwise
         elif (mode == CarMode.counterclockwise):
             self.motorRun(0, MotorMode.backward)  # FL
-            self.motorRun(1, MotorMode.forward)  # FR
-            self.motorRun(2, MotorMode.forward)  # BR
+            self.motorRun(1, MotorMode.forward)   # FR
+            self.motorRun(2, MotorMode.forward)   # BR
             self.motorRun(3, MotorMode.backward)  # BL
 
 if __name__=="__main__":
