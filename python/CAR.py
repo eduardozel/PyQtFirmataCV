@@ -45,7 +45,9 @@ class Car:
         it = pyfirmata.util.Iterator(self.board)
         it.start()
         self.curMode = CarMode.stop
-
+        self.ir_pin = self.board.get_pin('d:2:i')
+        self.ir_pin.enable_reporting()
+        self.bt_pin = self.board.get_pin('a:5:i')
         self.motorpins = [[5, 6]
             , [9, 10]
             , [11, 12]
@@ -62,23 +64,18 @@ class Car:
         print("del")
         self.board.exit()
 
+    def getIRsensor(self
+    ):
+        ir = self.ir_pin.read()
+        while ir is None:
+            ir = self.ir_pin.read()
+        return ir
+    # end getIRsensor
     def getBattery(self
     ):
-        pot = self.board.get_pin('a:5:i')
-        motorBattery = pot.read()
+        motorBattery = self.bt_pin.read()
         while motorBattery is None:
-            motorBattery = pot.read()
-#        self.board.digital[2].mode = pyfirmata.INPUT
-
-        ir_pin =  self.board.get_pin('d:2:i')
-        ir_pin.enable_reporting()
-        # delay for a second
-#        time.sleep(1)
-#        ir = self.board.digital[3].read()
-        ir = ir_pin.read()
-        while ir is None:
-            ir = ir_pin.read()
-        print ("ir",ir)
+            motorBattery = self.bt_pin.read()
         return motorBattery
     # end getBattery
     def motorRun(self, motor, mode):
