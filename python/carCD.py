@@ -28,9 +28,52 @@ class Window(tk.Tk):
         self.lblIRsensor = tk.Label(text="IR", borderwidth=2, bg="White", highlightthickness=4, highlightbackground="#37d3ff")
         self.lblIRsensor.place(x=120, y=10)
 
+
+
+        frameCTRL = tk.Frame(bd=2, bg='red')
+        frameCTRL.pack(expand=True)
+        frameCTRL.place(x=120, y=60)
+
+        self.imgFL = tk.PhotoImage(file='btn/btnFL.png')
+        self.btnFL = tk.Button(frameCTRL, image=self.imgFL)
+        self.btnFL.grid(row=0, column=0, padx=1, pady=1)#, padx=5, pady=5
+
+        self.imgFW = tk.PhotoImage(file='btn/btnFW.png')
+        self.btnFW = tk.Button(frameCTRL, image=self.imgFW)
+        self.btnFW.grid(row=0, column=1, padx=1, pady=1)
+        self.btnFW.bind("<ButtonPress>", self.btnFW_press)
+        self.btnFW.bind("<ButtonRelease>", self.btnFW_release)
+
+        self.imgFR = tk.PhotoImage(file='btn/btnFR.png')
+        self.btnFR = tk.Button(frameCTRL, image=self.imgFR)
+        self.btnFR.grid(row=0, column=2, padx=1, pady=1)#
+
+        btnLF = tk.Button(frameCTRL, text="LF")
+        btnLF.grid(row=1, column=0)#, padx=5, pady=5
+
+        btnRT = tk.Button(frameCTRL, text="RT")
+        btnRT.grid(row=1, column=2)#, padx=5, pady=5
+
+        btnBL = tk.Button(frameCTRL, text="BL")
+        btnBL.grid(row=2, column=0)#, padx=5, pady=5
+
+        btnBW = tk.Button(frameCTRL, text="BW")
+        btnBW.grid(row=2, column=1)#, padx=5, pady=5
+
+        btnBR = tk.Button(frameCTRL, text="BR")
+        btnBR.grid(row=2, column=2)#, padx=5, pady=5
+
+
         self.loop.create_task(self.getIRsensor())
         self.loop.create_task(self.getBattery())
     # end init
+
+    def btnFW_press(self, event):
+        carMecanum.CarRun(CarMode.forward)
+        print("button was pressed")
+    def btnFW_release(self, event):
+        carMecanum.CarRun(CarMode.stop)
+        print("button was released")
 
     async def show(self):
         while True:
@@ -109,10 +152,15 @@ if __name__ == '__main__':
     carPort = ''
     carPort = carSearch()
 
-    imgStop = tk.PhotoImage(file='C:/ed/api/prog/imgTurtle/move/mvSTOP.png')
-    btnStop = tk.Button(app, text="STOP", command=car_stop, image=imgStop)
-    btnStop.place(x=10, y=60)
-    btnStop['state'] = DISABLED
+#    imgStop = tk.PhotoImage(file='C:/ed/api/prog/imgTurtle/move/mvSTOP.png')
+#    btnStop = tk.Button(app, text="STOP", command=car_stop, image=imgStop)
+#    btnStop.place(x=10, y=60)
+#    btnStop['state'] = DISABLED
+
+    imgStart = tk.PhotoImage(file='C:/ed/api/prog/imgCtrl/btn/btnCD.png')
+    btnStart = tk.Button(app, text="STOP", command=car_stop, image=imgStart)
+    btnStart.place(x=10, y=60)
+
 
     lblPort = tk.Label( text=carPort, borderwidth=2, bg="White", highlightthickness=4, highlightbackground="#37d3ff")
     lblPort.place(x=10, y=10)
