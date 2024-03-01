@@ -18,6 +18,14 @@ class App:
         await self.window.show()
 
 class Window(tk.Tk):
+
+    def mkBTN(self, rw, cl, fnm):
+        self.img = tk.PhotoImage(file='btn/btn'+fnm+'.png')
+        btn = tk.Button( self.frameCTRL, image=self.img)
+        btn.grid(row=rw, column=cl, padx=1, pady=1)
+        return btn
+    # end mkBTN
+
     def __init__(self, loop):
         self.loop = loop
         self.root = tk.Tk()
@@ -28,41 +36,45 @@ class Window(tk.Tk):
         self.lblIRsensor = tk.Label(text="IR", borderwidth=2, bg="White", highlightthickness=4, highlightbackground="#37d3ff")
         self.lblIRsensor.place(x=120, y=10)
 
-
-
-        frameCTRL = tk.Frame(bd=2, bg='red')
-        frameCTRL.pack(expand=True)
-        frameCTRL.place(x=120, y=60)
+        self.frameCTRL = tk.Frame(bd=2, bg='red')
+        self.frameCTRL.pack(expand=True)
+        self.frameCTRL.place(x=140, y=60)
 
         self.imgFL = tk.PhotoImage(file='btn/btnFL.png')
-        self.btnFL = tk.Button(frameCTRL, image=self.imgFL)
-        self.btnFL.grid(row=0, column=0, padx=1, pady=1)#, padx=5, pady=5
+        self.btnFL = tk.Button(self.frameCTRL, image=self.imgFL)
+        self.btnFL.grid(row=0, column=0, padx=1, pady=1)
 
         self.imgFW = tk.PhotoImage(file='btn/btnFW.png')
-        self.btnFW = tk.Button(frameCTRL, image=self.imgFW)
+        self.btnFW = tk.Button(self.frameCTRL, image=self.imgFW)
         self.btnFW.grid(row=0, column=1, padx=1, pady=1)
         self.btnFW.bind("<ButtonPress>", self.btnFW_press)
         self.btnFW.bind("<ButtonRelease>", self.btnFW_release)
 
         self.imgFR = tk.PhotoImage(file='btn/btnFR.png')
-        self.btnFR = tk.Button(frameCTRL, image=self.imgFR)
+        self.btnFR = tk.Button(self.frameCTRL, image=self.imgFR)
         self.btnFR.grid(row=0, column=2, padx=1, pady=1)#
 
-        btnLF = tk.Button(frameCTRL, text="LF")
-        btnLF.grid(row=1, column=0)#, padx=5, pady=5
+        self.imgLF = tk.PhotoImage(file='btn/btnLF.png')
+        btnLF = tk.Button(self.frameCTRL, image=self.imgLF)
+        btnLF.grid(row=1, column=0, padx=1, pady=1)
 
-        btnRT = tk.Button(frameCTRL, text="RT")
-        btnRT.grid(row=1, column=2)#, padx=5, pady=5
+        self.imgRT = tk.PhotoImage(file='btn/btnRT.png')
+        btnRT = tk.Button(self.frameCTRL, image=self.imgRT)
+        btnRT.grid(row=1, column=2, padx=1, pady=1)
 
-        btnBL = tk.Button(frameCTRL, text="BL")
-        btnBL.grid(row=2, column=0)#, padx=5, pady=5
+        self.imgCCW = tk.PhotoImage(file='btn/btnCCW.png')
+        btnCCW = tk.Button(self.frameCTRL, image=self.imgCCW)
+        btnCCW.grid(row=2, column=0, padx=1, pady=1)
 
-        btnBW = tk.Button(frameCTRL, text="BW")
-        btnBW.grid(row=2, column=1)#, padx=5, pady=5
+        self.imgBW = tk.PhotoImage(file='btn/btnBW.png')
+        btnBW = tk.Button(self.frameCTRL, image=self.imgBW)
+        btnBW.grid(row=2, column=1, padx=1, pady=1)
 
-        btnBR = tk.Button(frameCTRL, text="BR")
-        btnBR.grid(row=2, column=2)#, padx=5, pady=5
+        btnCW = self.mkBTN( 2, 2, 'CW')
 
+        self.imgST = tk.PhotoImage(file='btn/btnSTOP.png')
+        btnST = tk.Button(self.frameCTRL, image=self.imgST)
+        btnST.grid(row=1, column=1, padx=1, pady=1)
 
         self.loop.create_task(self.getIRsensor())
         self.loop.create_task(self.getBattery())
@@ -144,10 +156,6 @@ if __name__ == '__main__':
 
 #    win = App(app)
 
-
-    flcam = 'camera'
-
-
     global carPort
     carPort = ''
     carPort = carSearch()
@@ -157,9 +165,10 @@ if __name__ == '__main__':
 #    btnStop.place(x=10, y=60)
 #    btnStop['state'] = DISABLED
 
-    imgStart = tk.PhotoImage(file='C:/ed/api/prog/imgCtrl/btn/btnCD.png')
+    imgStart = tk.PhotoImage(file='btn/btnCD.png')
     btnStart = tk.Button(app, text="STOP", command=car_stop, image=imgStart)
     btnStart.place(x=10, y=60)
+    btnStart.config( height = 120, width = 120 )
 
 
     lblPort = tk.Label( text=carPort, borderwidth=2, bg="White", highlightthickness=4, highlightbackground="#37d3ff")
