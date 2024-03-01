@@ -3,7 +3,7 @@
 
 #https://habr.com/ru/articles/337420/
 import tkinter as tk
-from tkinter.constants import DISABLED, NORMAL
+from tkinter.constants import DISABLED, NORMAL, SUNKEN, RAISED
 import asyncio
 import serial.tools.list_ports
 from CAR import Car, CarMode
@@ -30,11 +30,22 @@ class Window(tk.Tk):
         self.loop = loop
         self.root = tk.Tk()
 
-        self.lblBattery = tk.Label(text="Battery", borderwidth=2, bg="White", highlightthickness=4, highlightbackground="#37d3ff")
+        self.lblBattery = tk.Label(text="Battery", width=5, borderwidth=2, font=("Helvetica 14 bold"), bg="White", highlightthickness=4, highlightbackground="#37d3ff")
         self.lblBattery.place(x=170, y=10)
 
-        self.lblIRsensor = tk.Label(text="IR", borderwidth=2, bg="White", highlightthickness=4, highlightbackground="#37d3ff")
+        self.lblIRsensor = tk.Label(text="IR", width=2, borderwidth=2, font=("Helvetica 14 bold"), bg="White", highlightthickness=4, highlightbackground="#37d3ff")
         self.lblIRsensor.place(x=120, y=10)
+
+
+        self.frameSPEED = tk.Frame(bd=2, bg='white')
+        self.frameSPEED.pack(expand=True)
+        self.frameSPEED.place(x=270, y=60)
+
+        self.btnSP1 = tk.Button(self.frameSPEED, command=self.car_SP1, text= "1", font=("Helvetica 12 bold"), width=2, relief=SUNKEN)
+        self.btnSP1.grid(row=0, column=0, padx=1, pady=1)
+
+        self.btnSP2 = tk.Button(self.frameSPEED, command=self.car_SP2, text= "2", font=("Helvetica 12 bold"), width=2, relief=RAISED)
+        self.btnSP2.grid(row=1, column=0, padx=1, pady=1)
 
         self.frameCTRL = tk.Frame(bd=2, bg='red')
         self.frameCTRL.pack(expand=True)
@@ -73,13 +84,29 @@ class Window(tk.Tk):
         btnCW = self.mkBTN( 2, 2, 'CW')
 
         self.imgST = tk.PhotoImage(file='btn/btnSTOP.png')
-        btnST = tk.Button(self.frameCTRL, image=self.imgST)
+        btnST = tk.Button(self.frameCTRL, command=car_stop, image=self.imgST)
         btnST.grid(row=1, column=1, padx=1, pady=1)
 
+        self.car_SP1()
         self.loop.create_task(self.getIRsensor())
         self.loop.create_task(self.getBattery())
     # end init
 
+    def car_stop(self):
+        carMecanum.CarRun(CarMode.stop)
+    # end car_stop
+
+    def car_SP1(self):
+        self.btnSP2.config(relief=RAISED)
+        self.btnSP1.config(relief=SUNKEN)
+        carMecanum.carSpeed(1)
+    # end car_SP1
+
+    def car_SP2(self):
+        self.btnSP1.config(relief=RAISED)
+        self.btnSP2.config(relief=SUNKEN)
+        carMecanum.carSpeed(2)
+    # end car_SP2
     def btnFW_press(self, event):
         carMecanum.CarRun(CarMode.forward)
         print("button was pressed")
@@ -96,13 +123,17 @@ class Window(tk.Tk):
         while True:
             tmp = carMecanum.getIRsensor()
             self.lblIRsensor["text"] = tmp
+            if tmp == 0 :
+                self.lblIRsensor.config(bg="#37d3ff")
+            else :
+                self.lblIRsensor.config(bg="orange")
             self.root.update()
             await asyncio.sleep(0.1)
     # end getIRsensor
     async def getBattery(self):
         while True:
             tmp = carMecanum.getBattery()
-            self.lblBattery["text"] = tmp
+            self.lblBattery["text"] = f"{tmp:.{2}f}"+" V"
             self.root.update()
             await asyncio.sleep(0.1)
     # end getBattery

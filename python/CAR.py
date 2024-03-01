@@ -48,6 +48,8 @@ class Car:
         self.ir_pin = self.board.get_pin('d:2:i')
         self.ir_pin.enable_reporting()
         self.bt_pin = self.board.get_pin('a:5:i')
+        self.sp_pin = self.board.get_pin('d:3:p')
+
         self.motorpins = [[5, 6]
             , [9, 10]
             , [11, 12]
@@ -78,6 +80,16 @@ class Car:
             motorBattery = self.bt_pin.read()
         return motorBattery
     # end getBattery
+
+    def carSpeed(self, speed):
+
+        if speed == 1:
+            print("1")
+            self.sp_pin.write(50)
+        else:
+            print("2")
+            self.sp_pin.write(10)
+    #end carSpeed
     def motorRun(self, motor, mode):
         pin1 = self.motorpins[motor][0]
         pin0 = self.motorpins[motor][1]
