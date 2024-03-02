@@ -78,17 +78,16 @@ class Car:
         motorBattery = self.bt_pin.read()
         while motorBattery is None:
             motorBattery = self.bt_pin.read()
-        return motorBattery
+        return motorBattery*8
     # end getBattery
 
     def carSpeed(self, speed):
-
         if speed == 1:
             print("1")
-            self.sp_pin.write(50)
+            self.sp_pin.write(120)
         else:
             print("2")
-            self.sp_pin.write(10)
+            self.sp_pin.write(120)
     #end carSpeed
     def motorRun(self, motor, mode):
         pin1 = self.motorpins[motor][0]

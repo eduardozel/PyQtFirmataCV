@@ -1,6 +1,6 @@
 #Chip 'n Dale: Rescue Rangers
 #Чип и Дейл: Спешат на помощь
-
+#https://habr.com/ru/companies/wunderfund/articles/716740/
 #https://habr.com/ru/articles/337420/
 import tkinter as tk
 from tkinter.constants import DISABLED, NORMAL, SUNKEN, RAISED
@@ -74,18 +74,28 @@ class Window(tk.Tk):
         btnRT.grid(row=1, column=2, padx=1, pady=1)
 
         self.imgCCW = tk.PhotoImage(file='btn/btnCCW.png')
-        btnCCW = tk.Button(self.frameCTRL, image=self.imgCCW)
-        btnCCW.grid(row=2, column=0, padx=1, pady=1)
+        self.btnCCW = tk.Button(self.frameCTRL, image=self.imgCCW)
+        self.btnCCW.grid(row=2, column=0, padx=1, pady=1)
+        self.btnCCW.bind("<ButtonPress>", self.btnCW_press)
+        self.btnCCW.bind("<ButtonRelease>", self.btnCW_release)
 
         self.imgBW = tk.PhotoImage(file='btn/btnBW.png')
         btnBW = tk.Button(self.frameCTRL, image=self.imgBW)
         btnBW.grid(row=2, column=1, padx=1, pady=1)
 
-        btnCW = self.mkBTN( 2, 2, 'CW')
+        self.btnCW = self.mkBTN( 2, 2, 'CW')
+        self.btnCW.bind("<ButtonPress>", self.btnCW_press)
+        self.btnCW.bind("<ButtonRelease>", self.btnCW_release)
 
         self.imgST = tk.PhotoImage(file='btn/btnSTOP.png')
-        btnST = tk.Button(self.frameCTRL, command=car_stop, image=self.imgST)
-        btnST.grid(row=1, column=1, padx=1, pady=1)
+        self.btnST = tk.Button(self.frameCTRL, command=car_stop, image=self.imgST)
+        self.btnST.grid(row=1, column=1, padx=1, pady=1)
+#        tk.CreateToolTip(self.btnST,"STOP CAR")
+
+        self.imgStart = tk.PhotoImage(file='btn/btnCD.png')
+        self.btnStart = tk.Button(app, command=self.mission_start, image=self.imgStart)
+        self.btnStart.place(x=10, y=60)
+        self.btnStart.config(height=120, width=120)
 
         self.car_SP1()
         self.loop.create_task(self.getIRsensor())
@@ -107,6 +117,17 @@ class Window(tk.Tk):
         self.btnSP2.config(relief=SUNKEN)
         carMecanum.carSpeed(2)
     # end car_SP2
+
+    def btnCW_press(self, event):
+        carMecanum.CarRun(CarMode.clockwise)
+    def btnCW_release(self, event):
+        carMecanum.CarRun(CarMode.stop)
+
+    def btnCCW_press(self, event):
+        carMecanum.CarRun(CarMode.counterclockwise)
+
+    def btnCCW_release(self, event):
+        carMecanum.CarRun(CarMode.stop)
     def btnFW_press(self, event):
         carMecanum.CarRun(CarMode.forward)
         print("button was pressed")
@@ -123,20 +144,37 @@ class Window(tk.Tk):
         while True:
             tmp = carMecanum.getIRsensor()
             self.lblIRsensor["text"] = tmp
-            if tmp == 0 :
+            IRdetect = tmp == 0
+            if tmp == 1 :
                 self.lblIRsensor.config(bg="#37d3ff")
             else :
                 self.lblIRsensor.config(bg="orange")
             self.root.update()
-            await asyncio.sleep(0.1)
+            await asyncio.sleep(1)
     # end getIRsensor
+
     async def getBattery(self):
         while True:
             tmp = carMecanum.getBattery()
-            self.lblBattery["text"] = f"{tmp:.{2}f}"+" V"
+            self.lblBattery["text"] = f"{tmp:.{1}f}"+" V"
             self.root.update()
-            await asyncio.sleep(0.1)
+            await asyncio.sleep(10)
     # end getBattery
+
+    def mission_start(self):
+        pass
+        mission_task = self.loop.create_task(self.mission())
+        #was_cancelled = task.cancel()
+        #task.cancelled()
+    # end mission_start
+    async def mission(self):
+        carMecanum.CarRun(CarMode.clockwise)
+        while not IRdetect:
+            await asyncio.sleep(1.1)
+        carMecanum.CarRun(CarMode.stop)
+        print("mission end")
+    # end mission
+
 def cmd2car(mode):
     print(mode)
     if len(carPort)>0:
@@ -191,23 +229,11 @@ if __name__ == '__main__':
     carPort = ''
     carPort = carSearch()
 
-#    imgStop = tk.PhotoImage(file='C:/ed/api/prog/imgTurtle/move/mvSTOP.png')
-#    btnStop = tk.Button(app, text="STOP", command=car_stop, image=imgStop)
-#    btnStop.place(x=10, y=60)
-#    btnStop['state'] = DISABLED
-
-    imgStart = tk.PhotoImage(file='btn/btnCD.png')
-    btnStart = tk.Button(app, text="STOP", command=car_stop, image=imgStart)
-    btnStart.place(x=10, y=60)
-    btnStart.config( height = 120, width = 120 )
-
-
     lblPort = tk.Label( text=carPort, borderwidth=2, bg="White", highlightthickness=4, highlightbackground="#37d3ff")
     lblPort.place(x=10, y=10)
 
     app.protocol("WM_DELETE_WINDOW", on_closing)
-#    app.mainloop()
 
     asyncio.run(App().exec())
-    print("ex")
+    print("exit")
 
