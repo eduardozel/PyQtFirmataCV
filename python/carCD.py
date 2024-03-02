@@ -88,7 +88,7 @@ class Window(tk.Tk):
         self.btnCW.bind("<ButtonRelease>", self.btnCW_release)
 
         self.imgST = tk.PhotoImage(file='btn/btnSTOP.png')
-        self.btnST = tk.Button(self.frameCTRL, command=car_stop, image=self.imgST)
+        self.btnST = tk.Button(self.frameCTRL, command=self.btn_stop, image=self.imgST)
         self.btnST.grid(row=1, column=1, padx=1, pady=1)
 #        tk.CreateToolTip(self.btnST,"STOP CAR")
 
@@ -100,11 +100,17 @@ class Window(tk.Tk):
         self.car_SP1()
         self.loop.create_task(self.getIRsensor())
         self.loop.create_task(self.getBattery())
+
     # end init
 
-    def car_stop(self):
+    def btn_stop(self):
+        if not mission_task.cancelled():
+            was_cancelled = mission_task.cancel()
+            while not was_cancelled:
+                pass
+            self.btnStart['state'] = NORMAL
         carMecanum.CarRun(CarMode.stop)
-    # end car_stop
+    # end btn_stop
 
     def car_SP1(self):
         self.btnSP2.config(relief=RAISED)
@@ -144,6 +150,7 @@ class Window(tk.Tk):
         while True:
             tmp = carMecanum.getIRsensor()
             self.lblIRsensor["text"] = tmp
+            global IRdetect
             IRdetect = tmp == 0
             if tmp == 1 :
                 self.lblIRsensor.config(bg="#37d3ff")
@@ -162,7 +169,8 @@ class Window(tk.Tk):
     # end getBattery
 
     def mission_start(self):
-        pass
+        self.btnStart['state'] = DISABLED
+        global mission_task
         mission_task = self.loop.create_task(self.mission())
         #was_cancelled = task.cancel()
         #task.cancelled()
@@ -172,6 +180,11 @@ class Window(tk.Tk):
         while not IRdetect:
             await asyncio.sleep(1.1)
         carMecanum.CarRun(CarMode.stop)
+        await asyncio.sleep(1.1)
+        carMecanum.CarRun(CarMode.forward)
+        await asyncio.sleep(1.1)
+        carMecanum.CarRun(CarMode.stop)
+        self.btnStart['state'] = NORMAL
         print("mission end")
     # end mission
 
