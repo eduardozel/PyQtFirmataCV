@@ -76,8 +76,8 @@ class Window(tk.Tk):
         self.imgCCW = tk.PhotoImage(file='btn/btnCCW.png')
         self.btnCCW = tk.Button(self.frameCTRL, image=self.imgCCW)
         self.btnCCW.grid(row=2, column=0, padx=1, pady=1)
-        self.btnCCW.bind("<ButtonPress>", self.btnCW_press)
-        self.btnCCW.bind("<ButtonRelease>", self.btnCW_release)
+        self.btnCCW.bind("<ButtonPress>", self.btnCCW_press)
+        self.btnCCW.bind("<ButtonRelease>", self.btnCCW_release)
 
         self.imgBW = tk.PhotoImage(file='btn/btnBW.png')
         btnBW = tk.Button(self.frameCTRL, image=self.imgBW)
@@ -98,8 +98,10 @@ class Window(tk.Tk):
         self.btnStart.config(height=120, width=120)
 
         self.car_SP1()
-        self.loop.create_task(self.getIRsensor())
-        self.loop.create_task(self.getBattery())
+        global IR_task
+        IR_task = self.loop.create_task(self.getIRsensor())
+        global BAT_task
+        BAT_task = self.loop.create_task(self.getBattery())
 
     # end init
 
@@ -136,10 +138,8 @@ class Window(tk.Tk):
         carMecanum.CarRun(CarMode.stop)
     def btnFW_press(self, event):
         carMecanum.CarRun(CarMode.forward)
-        print("button was pressed")
     def btnFW_release(self, event):
         carMecanum.CarRun(CarMode.stop)
-        print("button was released")
 
     async def show(self):
         while True:
@@ -152,12 +152,12 @@ class Window(tk.Tk):
             self.lblIRsensor["text"] = tmp
             global IRdetect
             IRdetect = tmp == 0
-            if tmp == 1 :
-                self.lblIRsensor.config(bg="#37d3ff")
-            else :
+            if IRdetect :
                 self.lblIRsensor.config(bg="orange")
+            else :
+                self.lblIRsensor.config(bg="#37d3ff")
             self.root.update()
-            await asyncio.sleep(1)
+            await asyncio.sleep(0.1)
     # end getIRsensor
 
     async def getBattery(self):
@@ -176,13 +176,14 @@ class Window(tk.Tk):
         #task.cancelled()
     # end mission_start
     async def mission(self):
-        carMecanum.CarRun(CarMode.clockwise)
         while not IRdetect:
-            await asyncio.sleep(1.1)
-        carMecanum.CarRun(CarMode.stop)
-        await asyncio.sleep(1.1)
+            carMecanum.CarRun(CarMode.clockwise)
+            await asyncio.sleep(0.2)
+            carMecanum.CarRun(CarMode.stop)
+            await asyncio.sleep(1.0)
+        await asyncio.sleep(2.1)
         carMecanum.CarRun(CarMode.forward)
-        await asyncio.sleep(1.1)
+        await asyncio.sleep(0.5)
         carMecanum.CarRun(CarMode.stop)
         self.btnStart['state'] = NORMAL
         print("mission end")
@@ -199,15 +200,15 @@ def carSearch():
     """
     ports = serial.tools.list_ports.comports()
     portNo = ''
-#    for port in ports:
-#            print(port.device)
+    for port in ports:
+            print(port.device)
 #            print(f"description: {port.description}")
 #            print(f"manufacturer: {port.manufacturer}\n")
 #            print(f"hwid: {port.hwid}\n")
 #            if port.hwid == 'BTHENUM\\{00001101-0000-1000-8000-00805F9B34FB}_VID&0001000E_PID&3412\\8&39341452&0&98DA600ACB1E_C00000000':
 #                portNo = port.device
 #                print('!' + portNo)
-    portNo = 'COM6'
+    portNo = 'COM7'
     if (portNo != ''):
         global carMecanum
         carMecanum = Car(portNo)
@@ -225,8 +226,20 @@ def car_stop():
 # end car_stop
 
 def on_closing():
-    print("exit")
+    if not mission_task.cancelled():
+        was_cancelled = mission_task.cancel()
+        while not was_cancelled:
+            pass
+    if not IR_task.cancelled():
+        was_cancelled = IR_task.cancel()
+        while not was_cancelled:
+            pass
+    if not BAT_task.cancelled():
+        was_cancelled = BAT_task.cancel()
+        while not was_cancelled:
+            pass
     car_stop()
+    print("exit")
     app.destroy()
 
 if __name__ == '__main__':
@@ -246,7 +259,8 @@ if __name__ == '__main__':
     lblPort.place(x=10, y=10)
 
     app.protocol("WM_DELETE_WINDOW", on_closing)
-
     asyncio.run(App().exec())
-    print("exit")
+    carMecanum.CarRun(CarMode.stop)
+    print("the end")
+
 

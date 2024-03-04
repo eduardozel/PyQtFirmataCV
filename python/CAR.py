@@ -83,10 +83,8 @@ class Car:
 
     def carSpeed(self, speed):
         if speed == 1:
-            print("1")
-            self.sp_pin.write(120)
+            self.sp_pin.write(65)
         else:
-            print("2")
             self.sp_pin.write(120)
     #end carSpeed
     def motorRun(self, motor, mode):
@@ -135,10 +133,10 @@ class Car:
             self.motorRun(2, MotorMode.backward)
             self.motorRun(3, MotorMode.backward)
         elif (mode == CarMode.left):
-            self.motorRun(0, MotorMode.backward) #FL
-            self.motorRun(1, MotorMode.forward)  #FR
-            self.motorRun(2, MotorMode.backward) #BR
-            self.motorRun(3, MotorMode.forward)  #BL
+            self.motorRun(0, MotorMode.backward)  #FL
+            self.motorRun(1, MotorMode.forward)   #FR
+            self.motorRun(2, MotorMode.backward)  #BR
+            self.motorRun(3, MotorMode.forward)   #BL
         elif (mode == CarMode.right):
             self.motorRun(0, MotorMode.forward)   #FL
             self.motorRun(1, MotorMode.backward)  #FR
@@ -150,10 +148,10 @@ class Car:
             self.motorRun(2, MotorMode.backward)  #BR
             self.motorRun(3, MotorMode.forward)   #BL
         elif (mode == CarMode.counterclockwise):
-            self.motorRun(0, MotorMode.backward)  # FL
-            self.motorRun(1, MotorMode.forward)   # FR
-            self.motorRun(2, MotorMode.forward)   # BR
-            self.motorRun(3, MotorMode.backward)  # BL
+            self.motorRun(0, MotorMode.backward)  #FL
+            self.motorRun(1, MotorMode.forward)   #FR
+            self.motorRun(2, MotorMode.forward)   #BR
+            self.motorRun(3, MotorMode.backward)  #BL
 
 if __name__=="__main__":
     pass
