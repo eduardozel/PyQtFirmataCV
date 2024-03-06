@@ -30,6 +30,16 @@ class Window(tk.Tk):
         self.loop = loop
         self.root = tk.Tk()
 
+#        def keyup(e):
+#            print (     'up', e.char)
+
+#        def keydown(e):
+#            print (           'down', e.char)
+
+#        self.root.bind('<KP_8>', hello)
+#        self.root.bind("<KeyPress>", self.keydown)
+#        self.root.bind("<KeyRelease>", self.keyup)
+
         self.lblBattery = tk.Label(text="Battery", width=5, borderwidth=2, font=("Helvetica 14 bold"), bg="White", highlightthickness=4, highlightbackground="#37d3ff")
         self.lblBattery.place(x=170, y=10)
 
@@ -66,8 +76,10 @@ class Window(tk.Tk):
         self.btnFR.grid(row=0, column=2, padx=1, pady=1)#
 
         self.imgLF = tk.PhotoImage(file='btn/btnLF.png')
-        btnLF = tk.Button(self.frameCTRL, image=self.imgLF)
-        btnLF.grid(row=1, column=0, padx=1, pady=1)
+        self.btnLF = tk.Button(self.frameCTRL, image=self.imgLF)
+        self.btnLF.grid(row=1, column=0, padx=1, pady=1)
+        self.btnLF.bind("<ButtonPress>", self.btnLF_press)
+        self.btnLF.bind("<ButtonRelease>", self.btnLF_release)
 
         self.imgRT = tk.PhotoImage(file='btn/btnRT.png')
         btnRT = tk.Button(self.frameCTRL, image=self.imgRT)
@@ -136,6 +148,11 @@ class Window(tk.Tk):
 
     def btnCCW_release(self, event):
         carMecanum.CarRun(CarMode.stop)
+
+    def btnLF_press(self, event):
+        carMecanum.CarRun(CarMode.left)
+    def btnLF_release(self, event):
+        carMecanum.CarRun(CarMode.stop)
     def btnFW_press(self, event):
         carMecanum.CarRun(CarMode.forward)
     def btnFW_release(self, event):
@@ -176,14 +193,21 @@ class Window(tk.Tk):
         #task.cancelled()
     # end mission_start
     async def mission(self):
+        carMecanum.CarRun(CarMode.forward)
+        await asyncio.sleep(0.4)
+        carMecanum.CarRun(CarMode.stop)
+        await asyncio.sleep(0.3)
+        carMecanum.CarRun(CarMode.left)
+        await asyncio.sleep(0.5)
+        carMecanum.CarRun(CarMode.stop)
         while not IRdetect:
             carMecanum.CarRun(CarMode.clockwise)
-            await asyncio.sleep(0.2)
+            await asyncio.sleep(0.05)
             carMecanum.CarRun(CarMode.stop)
-            await asyncio.sleep(1.0)
-        await asyncio.sleep(2.1)
+            await asyncio.sleep(0.5)
+        await asyncio.sleep(1.1)
         carMecanum.CarRun(CarMode.forward)
-        await asyncio.sleep(0.5)
+        await asyncio.sleep(0.2)
         carMecanum.CarRun(CarMode.stop)
         self.btnStart['state'] = NORMAL
         print("mission end")
