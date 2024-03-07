@@ -20,3 +20,6 @@ https://mysku.club/blog/aliexpress/82725.html
 
 ROS
 https://amperka.ru/blogs/projects/abot-robot-part-11
+
+Архитектура event-driven приложений
+https://habr.com/ru/companies/otus/articles/740578/
